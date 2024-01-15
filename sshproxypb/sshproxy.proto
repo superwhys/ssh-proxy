@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+option go_package = "sshproxy/sshproxypb";
+
+service ServiceTunnel {
+	rpc Connect (ConnectRequest) returns (ConnectResponse) {};
+	rpc Disconnect (DisconnectRequest) returns (DisconnectResponse) {};
+	rpc GetConnectNodes (GetConnectNodesRequest) returns (GetConnectNodesResponse) {};
+}
+
+message Service {
+	string service_name = 1;
+	string remote_address = 2;
+}
+
+message ConnectRequest {
+	string service_name = 1;
+	repeated Service services = 2;
+}
+
+message Node {
+  string local_address = 1;
+  string remote_address = 2;
+  string service_name = 3;
+  string tag = 4;
+}
+
+message ConnectResponse {
+	repeated Node connected_nodes = 1;	
+}
+
+message DisconnectRequest {
+	string service_name = 1;
+}
+
+message DisconnectResponse {}
+
+message GetConnectNodesRequest {}
+
+message GetConnectNodesResponse {
+	repeated Node connected_nodes = 1;
+}
