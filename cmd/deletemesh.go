@@ -13,6 +13,7 @@ import (
 var deletemeshCmd = &cobra.Command{
 	Use:   "delete [mesh1] [mesh2] ...",
 	Short: "Delete mesh",
+	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
 			return cmd.Help()

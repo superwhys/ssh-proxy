@@ -65,5 +65,4 @@ var connectmeshCmd = &cobra.Command{
 func init() {
 	meshCmd.AddCommand(connectmeshCmd)
 	connectmeshCmd.Flags().String("user", "root", "User to connect to remote services.")
-
 }

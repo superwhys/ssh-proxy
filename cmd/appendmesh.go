@@ -13,6 +13,7 @@ import (
 var appendCmd = &cobra.Command{
 	Use:   "append [mesh] [service1] [service2] ...",
 	Short: "Append services to existing mesh",
+	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		flags.Parse()
 		meshName := args[0]

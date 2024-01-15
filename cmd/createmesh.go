@@ -13,6 +13,7 @@ import (
 var createmeshCmd = &cobra.Command{
 	Use:   "create [mesh] [service1] [service2] ...",
 	Short: "Create a mesh of multiple services",
+	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		flags.Parse()
 		meshName := args[0]
