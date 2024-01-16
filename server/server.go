@@ -39,7 +39,11 @@ type connectedNodes struct {
 }
 
 func randomLocalAddr() string {
-	l, _ := net.Listen("tcp", "")
+	l, err := net.Listen("tcp", "")
+	if err != nil {
+		panic(err)
+	}
+
 	defer l.Close()
 	return l.Addr().String()
 }
@@ -137,7 +141,7 @@ func (st *ServiceTunnel) dialService(ctx context.Context, services []*sshproxypb
 
 	for _, service := range services {
 		var localAddr string
-		if localPort := st.getLocalPortCache(service.GetRemoteAddress()); localPort != "" {
+		if localPort := st.getLocalPortCache(service.GetProxyAddress()); localPort != "" {
 			localAddr = fmt.Sprintf("[::]:%v", localPort)
 		} else {
 			localAddr = randomLocalAddr()
@@ -146,20 +150,20 @@ func (st *ServiceTunnel) dialService(ctx context.Context, services []*sshproxypb
 				lg.Errorc(ctx, "split local addr error: %v", err)
 				continue
 			}
-			if err := st.writeNewLocalPort(service.GetRemoteAddress(), port); err != nil {
+			if err := st.writeNewLocalPort(service.GetProxyAddress(), port); err != nil {
 				lg.Errorc(ctx, "write local port cache error: %v", err)
 				continue
 			}
 		}
 
-		remoteAddr := service.GetRemoteAddress()
-		if err := st.buildTunnel(ctx, remoteAddr, localAddr); err != nil {
+		proxyAddr := service.GetProxyAddress()
+		if err := st.buildTunnel(ctx, proxyAddr, localAddr); err != nil {
 			continue
 		}
 
 		mappings = append(mappings, &sshproxypb.Node{
 			LocalAddress:  localAddr,
-			RemoteAddress: remoteAddr,
+			RemoteAddress: proxyAddr,
 			ServiceName:   service.GetServiceName(),
 		})
 	}
@@ -173,7 +177,12 @@ func (st *ServiceTunnel) Disconnect(ctx context.Context, in *sshproxypb.Disconne
 		return nil, errors.New("service not found")
 	}
 
-	st.connectedMaps[serviceName].Cancel()
+	srv, exists := st.connectedMaps[serviceName]
+	if !exists {
+		return nil, errors.New("connected service not exists")
+	}
+
+	srv.Cancel()
 	delete(st.connectedMaps, serviceName)
 	lg.Infoc(ctx, "disconnect service: %v success", serviceName)
 

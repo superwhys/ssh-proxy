@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/olekukonko/tablewriter"
+	"github.com/pkg/errors"
 	"github.com/superwhys/ssh-proxy/sshproxypb"
 )
 
@@ -79,45 +80,58 @@ func prettyLocalAddr(addr string) string {
 	return "http://localhost:" + addr + "/debug"
 }
 
-func parseHostPortPairs(args ...string) ([]*sshproxypb.Service, error) {
-	var formatServices []*sshproxypb.Service
+func parseProfileHostPort(args ...string) ([]*sshproxypb.Service, error) {
+	var proxyHosts []*sshproxypb.Service
 	dupService := make(map[string]bool)
 
-	appendService := func(serviceName, remoteAddr string) {
-		if _, ok := dupService[serviceName]; ok {
+	for _, arg := range args {
+		_, _, err := net.SplitHostPort(arg)
+		if err != nil {
+			return nil, errors.Wrap(err, "host:port format invalid")
+		}
+
+		if _, ok := dupService[arg]; ok {
+			continue
+		}
+
+		proxyHosts = append(proxyHosts, &sshproxypb.Service{
+			ServiceName:   arg,
+			RemoteAddress: "",
+			ProxyAddress:  arg,
+		})
+		dupService[arg] = true
+	}
+	return proxyHosts, nil
+}
+
+func parseHostPortPairs(args ...string) ([]*sshproxypb.Service, error) {
+	var proxyHosts []*sshproxypb.Service
+	dupService := make(map[string]bool)
+
+	appendProxy := func(remoteAddr, proxyAddr string) {
+		dupKey := fmt.Sprintf("%v:%v", remoteAddr, proxyAddr)
+		if _, ok := dupService[dupKey]; ok {
 			return
 		}
-		formatServices = append(formatServices, &sshproxypb.Service{
-			ServiceName:   serviceName,
+		proxyHosts = append(proxyHosts, &sshproxypb.Service{
+			ServiceName:   proxyAddr,
 			RemoteAddress: remoteAddr,
+			ProxyAddress:  proxyAddr,
 		})
-		dupService[serviceName] = true
+		dupService[dupKey] = true
 	}
 
+	var err error
 	for i := 0; i < len(args); {
-		// first arg in a group is service name
-		if !isTCPAddr(args[i]) {
-			if isTCPAddr(args[i+1]) {
-				appendService(args[i], args[i+1])
-				i++
-			} else {
-				return nil, fmt.Errorf("A service name must be followed by a remote address: %s", args[i])
-			}
-		} else {
-			// first arg in a group is remote address
-			appendService(args[i], args[i])
+		_, _, err = net.SplitHostPort(args[i])
+		_, _, err = net.SplitHostPort(args[i+1])
+		if err != nil {
+			return nil, errors.Wrap(err, "host:port format invalid")
 		}
-		i++
+
+		appendProxy(args[i], args[i+1])
+		i += 2
 	}
 
-	// for _, arg := range args {
-	// 	_, _, err := net.SplitHostPort(arg)
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-
-	// 	appendService(arg, arg)
-	// }
-
-	return formatServices, nil
+	return proxyHosts, nil
 }

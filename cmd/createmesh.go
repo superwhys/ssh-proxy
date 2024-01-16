@@ -4,6 +4,7 @@ Copyright © 2023 Yong
 package cmd
 
 import (
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/superwhys/goutils/flags"
 	"github.com/superwhys/ssh-proxy/server"
@@ -11,14 +12,18 @@ import (
 
 // createmeshCmd represents the createmesh command
 var createmeshCmd = &cobra.Command{
-	Use:   "create [mesh] [service1] [service2] ...",
+	Use:   "create --env dev [mesh] [service1] [service2] ...",
 	Short: "Create a mesh of multiple services",
-	Args:  cobra.MinimumNArgs(1),
+	Args:  cobra.MinimumNArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		flags.Parse()
 		meshName := args[0]
 
-		services, err := parseHostPortPairs(args[1:]...)
+		if env() == "" {
+			return errors.New("no env provide")
+		}
+
+		services, err := parseProfileHostPort(args[1:]...)
 		if err != nil {
 			return err
 		}
@@ -29,7 +34,7 @@ var createmeshCmd = &cobra.Command{
 			Env:  env(),
 		}
 		for _, service := range services {
-			mesh.Services = append(mesh.Services, server.Service{RemoteAddr: service.RemoteAddress, ServiceName: service.ServiceName})
+			mesh.Services = append(mesh.Services, server.Service{RemoteAddr: service.ProxyAddress, ServiceName: service.ServiceName})
 		}
 
 		return serviceMesh.CreateMesh(mesh)

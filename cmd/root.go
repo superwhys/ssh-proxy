@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	env            = flags.String("env", "dev", "Environment name for looking up connection profile")
+	env            = flags.String("env", "", "Environment name for looking up connection profile")
 	profiles       = flags.Struct("profiles", []*ConnectionProfile{}, "Connection profiles")
 	privateKeyPath = flags.String("privateKey", os.Getenv("HOME")+"/.ssh/id_rsa", "private key")
 	port           = flags.Int("port", 0, "Port for serivce")

@@ -5,11 +5,11 @@ package cmd
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net"
 	"os"
 
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/superwhys/ssh-proxy/server"
 	"github.com/superwhys/ssh-proxy/sshproxypb"
@@ -28,30 +28,44 @@ func isTCPAddr(addr string) bool {
 
 // connectCmd represents the connect command
 var connectCmd = &cobra.Command{
-	Use:   "connect <host:port | alias host:port>..",
-	Short: "Connects specified port in host",
+	Use:   "connect [options] [sshHost:sshPort proxyHost:proxyPort...] | [proxyHost:proxyPort]",
+	Short: "Proxy the proxyHost:proxyPort to the local through sshHost",
+	Long: `Proxy the proxyHost:proxyPort to the local through sshHost. 
+	It is similar to a forward proxy for ssh.
+	You can provide the remote side which need to be connect and the proxy side to proxy the service to local like:
+
+	ssh-proxy sshHost:sshPort localhost:8000
+
+	or 
+	You can use the profile config to define some alias of remote side, so that use can just connect to remote like:
+
+	ssh-proxy --env aliasName localhost:8000
+
+	`,
+	Args: cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		useProfile := flags.Bool("useProfile", false, "whether to connect with specified profile")
-		tunnelPort := flags.Int("tunnelPort", 22, "ssh tunnel connect port")
 		user := flags.String("user", "root", "")
 
 		flags.Parse()
 
-		lg.Infof("useProfile: %v, tunnelPort: %v", useProfile(), tunnelPort())
+		var err error
+		if env() == "" {
+			if len(args)%2 != 0 {
+				return errors.New("args is not a valid sshHost and proxyHost pairs")
+			}
 
-		formatServices, err := parseHostPortPairs(args...)
-		if err != nil {
-			return err
-		}
+			proxyHosts, err := parseHostPortPairs(args...)
+			if err != nil {
+				return errors.Wrap(err, "parse host pairs")
+			}
 
-		if len(formatServices) == 0 {
-			return errors.New("connect command need service provided")
-		}
-
-		if !useProfile() {
-			err = startConnectDirect(tunnelPort(), user(), privateKeyPath(), formatServices)
+			err = startConnectDirect(user(), privateKeyPath(), proxyHosts)
 		} else {
-			err = startConnect(formatServices)
+			proxyHosts, err := parseProfileHostPort(args...)
+			if err != nil {
+				return errors.Wrap(err, "parse profile hostPort")
+			}
+			err = startConnect(proxyHosts)
 		}
 		if err != nil {
 			lg.Errorf("Failed to start connect: %v", err)
@@ -90,12 +104,12 @@ func dialDirectTunnel(user, host, identityFile string) *sshtunnel.SshTunnel {
 		},
 	}
 
+	lg.Info(lg.Jsonify(profile))
+
 	return sshtunnel.NewTunnel(profile.Hosts...)
 }
 
-func startConnectDirect(tunnelPort int, user, identityFile string, args []*sshproxypb.Service) error {
-	ctx := context.Background()
-
+func startConnectDirect(user, identityFile string, proxyHosts []*sshproxypb.Service) error {
 	table := map[string][]*sshproxypb.Node{}
 	serviceTunnelGroup := make(map[string]*server.ServiceTunnel)
 	defer func() {
@@ -104,19 +118,18 @@ func startConnectDirect(tunnelPort int, user, identityFile string, args []*sshpr
 		}
 	}()
 
-	for _, arg := range args {
-		host, _, _ := net.SplitHostPort(arg.RemoteAddress)
-		host = fmt.Sprintf("%v:%v", host, tunnelPort)
-
+	ctx := context.Background()
+	for _, pair := range proxyHosts {
+		sshHost := pair.RemoteAddress
 		var serviceTunnel *server.ServiceTunnel
-		if serviceTunnel = serviceTunnelGroup[host]; serviceTunnel == nil {
-			tunnel := dialDirectTunnel(user, host, identityFile)
+		if serviceTunnel = serviceTunnelGroup[sshHost]; serviceTunnel == nil {
+			tunnel := dialDirectTunnel(user, sshHost, identityFile)
 			serviceTunnel = server.NewServiceTunnel(tunnel)
-			serviceTunnelGroup[host] = serviceTunnel
+			serviceTunnelGroup[sshHost] = serviceTunnel
 		}
 
 		resp, err := serviceTunnel.Connect(ctx, &sshproxypb.ConnectRequest{
-			Services: []*sshproxypb.Service{arg},
+			Services: []*sshproxypb.Service{pair},
 		})
 		if err != nil {
 			lg.Errorc(ctx, "Failed to connect remote services: %v", err)
@@ -125,6 +138,7 @@ func startConnectDirect(tunnelPort int, user, identityFile string, args []*sshpr
 		for _, node := range resp.GetConnectedNodes() {
 			table[serviceTunnel.GetRemoteHost()] = append(table[serviceTunnel.GetRemoteHost()], node)
 		}
+
 	}
 
 	lg.Info("Connected services\n" + prettyMaps(table))
@@ -145,7 +159,7 @@ func startConnectDirect(tunnelPort int, user, identityFile string, args []*sshpr
 
 // startConnect used to connect remote services with tunnel
 // By default, all services connected at a single time are under the same host
-func startConnect(args []*sshproxypb.Service) error {
+func startConnect(proxyHosts []*sshproxypb.Service) error {
 	ctx := context.Background()
 	tunnel, err := dialTunnel()
 	if err != nil {
@@ -155,14 +169,13 @@ func startConnect(args []*sshproxypb.Service) error {
 	st := server.NewServiceTunnel(tunnel)
 	defer st.Close()
 	resp, err := st.Connect(ctx, &sshproxypb.ConnectRequest{
-		Services: args,
+		Services: proxyHosts,
 	})
 	if err != nil {
 		lg.Errorc(ctx, "Failed to connect remote services: %v", err)
 		return err
 	}
 
-	// map{"remoteHost": [{local, remote, serviceName, tag}]}
 	table := map[string][]*sshproxypb.Node{}
 
 	for _, node := range resp.GetConnectedNodes() {
@@ -184,7 +197,5 @@ func startConnect(args []*sshproxypb.Service) error {
 func init() {
 	rootCmd.AddCommand(connectCmd)
 
-	connectCmd.Flags().Bool("useProfile", false, "whether to connect with specified profile")
-	connectCmd.Flags().IntP("tunnelPort", "p", 22, "ssh tunnel connect port")
 	connectCmd.Flags().StringP("user", "u", "root", "User to connect to remote services.")
 }

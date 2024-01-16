@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	meshFile = fmt.Sprintf("%v/.service-tunnel-mesh.json", os.Getenv("HOME"))
+	meshFile = fmt.Sprintf("%v/.ssh-proxy-mesh.json", os.Getenv("HOME"))
 	rwcFlag  = os.O_RDWR | os.O_CREATE
 )
 

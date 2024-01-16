@@ -11,6 +11,7 @@ service ServiceTunnel {
 message Service {
 	string service_name = 1;
 	string remote_address = 2;
+	string proxy_address = 3;
 }
 
 message ConnectRequest {
