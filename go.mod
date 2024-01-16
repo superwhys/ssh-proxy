@@ -7,7 +7,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.7.0
 	github.com/superwhys/goutils v0.0.0-20240115032320-fa0f1c08a061
-	github.com/superwhys/sshtunnel v0.0.0-20240115031029-ce6685dc03de
+	github.com/superwhys/sshtunnel v0.0.0-20240116030909-778f4307efd0
 	google.golang.org/grpc v1.60.1
 	google.golang.org/protobuf v1.32.0
 )

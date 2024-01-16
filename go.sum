@@ -1115,6 +1115,8 @@ github.com/superwhys/goutils v0.0.0-20240115032320-fa0f1c08a061 h1:tXD3Zwtt0+Oa0
 github.com/superwhys/goutils v0.0.0-20240115032320-fa0f1c08a061/go.mod h1:Q722JzvDWjuJSgkP8W/mn0RY8OMsGttpygQamYriY8Q=
 github.com/superwhys/sshtunnel v0.0.0-20240115031029-ce6685dc03de h1:34C+NanZGmWLMN4+J8pUXz5JHSBkoPRf+41yvT4O2To=
 github.com/superwhys/sshtunnel v0.0.0-20240115031029-ce6685dc03de/go.mod h1:OjVzjMknQXUEPdg6m6l1C7l7IyxCOVQCbMyKivBbidU=
+github.com/superwhys/sshtunnel v0.0.0-20240116030909-778f4307efd0 h1:0pmMExjHW6RlZnUJYsWQxiBW/dj97sCZ+nSSv/QdldM=
+github.com/superwhys/sshtunnel v0.0.0-20240116030909-778f4307efd0/go.mod h1:OjVzjMknQXUEPdg6m6l1C7l7IyxCOVQCbMyKivBbidU=
 github.com/tv42/httpunix v0.0.0-20150427012821-b75d8614f926/go.mod h1:9ESjWnEqriFuLhtthL60Sar/7RFoluCcXsuvEwTV5KM=
 github.com/twitchyliquid64/golang-asm v0.15.1 h1:SU5vSMR7hnwNxj24w34ZyCi/FmDZTkS4MhqMhdFk5YI=
 github.com/twitchyliquid64/golang-asm v0.15.1/go.mod h1:a1lVb/DtPvCB8fslRZhAngC2+aY1QWCk3Cedj/Gdt08=
