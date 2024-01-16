@@ -110,35 +110,43 @@ func dialDirectTunnel(user, host, identityFile string) *sshtunnel.SshTunnel {
 }
 
 func startConnectDirect(user, identityFile string, proxyHosts []*sshproxypb.Service) error {
+	lg.Info("connect direct")
+
 	table := map[string][]*sshproxypb.Node{}
-	serviceTunnelGroup := make(map[string]*server.ServiceTunnel)
+	serviceTunnel := server.NewServiceTunnel()
+	connectServices := make([]*sshproxypb.Service, 0)
+	tunnelCache := make(map[string]*sshtunnel.SshTunnel)
 	defer func() {
-		for _, st := range serviceTunnelGroup {
+		for _, st := range tunnelCache {
 			st.Close()
 		}
+		serviceTunnel.Close()
 	}()
 
 	ctx := context.Background()
+
 	for _, pair := range proxyHosts {
 		sshHost := pair.RemoteAddress
-		var serviceTunnel *server.ServiceTunnel
-		if serviceTunnel = serviceTunnelGroup[sshHost]; serviceTunnel == nil {
+
+		if _, exists := tunnelCache[sshHost]; !exists {
 			tunnel := dialDirectTunnel(user, sshHost, identityFile)
-			serviceTunnel = server.NewServiceTunnel(tunnel)
-			serviceTunnelGroup[sshHost] = serviceTunnel
+			lg.Infof("dial ssh tunnel success: %v", sshHost)
+			serviceTunnel.DialTunnel(tunnel)
+			tunnelCache[sshHost] = tunnel
 		}
 
-		resp, err := serviceTunnel.Connect(ctx, &sshproxypb.ConnectRequest{
-			Services: []*sshproxypb.Service{pair},
-		})
-		if err != nil {
-			lg.Errorc(ctx, "Failed to connect remote services: %v", err)
-			continue
-		}
-		for _, node := range resp.GetConnectedNodes() {
-			table[serviceTunnel.GetRemoteHost()] = append(table[serviceTunnel.GetRemoteHost()], node)
-		}
+		connectServices = append(connectServices, pair)
+	}
 
+	resp, err := serviceTunnel.Connect(ctx, &sshproxypb.ConnectRequest{
+		Services: connectServices,
+	})
+	if err != nil {
+		lg.Errorc(ctx, "Failed to connect remote services: %v", err)
+		return errors.Wrap(err, "tunnelConnect")
+	}
+	for _, node := range resp.GetConnectedNodes() {
+		table[node.GetHostAddress()] = append(table[node.GetHostAddress()], node)
 	}
 
 	lg.Info("Connected services\n" + prettyMaps(table))
@@ -147,11 +155,10 @@ func startConnectDirect(user, identityFile string, proxyHosts []*sshproxypb.Serv
 		service.WithGRPCUI(),
 		service.WithPprof(),
 	}
-	for _, st := range serviceTunnelGroup {
-		serviceOpts = append(serviceOpts, service.WithGRPC(func(srv *grpc.Server) {
-			sshproxypb.RegisterServiceTunnelServer(srv, st)
-		}))
-	}
+
+	serviceOpts = append(serviceOpts, service.WithGRPC(func(srv *grpc.Server) {
+		sshproxypb.RegisterServiceTunnelServer(srv, serviceTunnel)
+	}))
 
 	srv := service.NewSuperService(serviceOpts...)
 	return srv.ListenAndServer(port())
@@ -166,7 +173,12 @@ func startConnect(proxyHosts []*sshproxypb.Service) error {
 		return err
 	}
 
-	st := server.NewServiceTunnel(tunnel)
+	for _, ph := range proxyHosts {
+		ph.RemoteAddress = tunnel.GetRemoteHost()
+	}
+
+	st := server.NewServiceTunnel()
+	st.DialTunnel(tunnel)
 	defer st.Close()
 	resp, err := st.Connect(ctx, &sshproxypb.ConnectRequest{
 		Services: proxyHosts,
@@ -179,7 +191,7 @@ func startConnect(proxyHosts []*sshproxypb.Service) error {
 	table := map[string][]*sshproxypb.Node{}
 
 	for _, node := range resp.GetConnectedNodes() {
-		table[st.GetRemoteHost()] = append(table[st.GetRemoteHost()], node)
+		table[tunnel.GetRemoteHost()] = append(table[tunnel.GetRemoteHost()], node)
 	}
 	lg.Info("Connected services\n" + prettyMaps(table))
 

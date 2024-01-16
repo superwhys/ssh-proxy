@@ -15,15 +15,15 @@ message Service {
 }
 
 message ConnectRequest {
-	string service_name = 1;
 	repeated Service services = 2;
 }
 
 message Node {
   string local_address = 1;
   string remote_address = 2;
-  string service_name = 3;
-  string tag = 4;
+  string host_address = 3;
+  string service_name = 4;
+  string tag = 5;
 }
 
 message ConnectResponse {
@@ -31,7 +31,8 @@ message ConnectResponse {
 }
 
 message DisconnectRequest {
-	string service_name = 1;
+	string host_address = 1;
+	string proxy_address = 2;
 }
 
 message DisconnectResponse {}
