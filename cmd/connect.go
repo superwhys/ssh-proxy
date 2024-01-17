@@ -47,6 +47,9 @@ var connectCmd = &cobra.Command{
 		user := flags.String("user", "root", "")
 
 		flags.Parse()
+		if lg.IsDebug() {
+			lg.Info("is debug")
+		}
 
 		var err error
 		if env() == "" {

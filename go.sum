@@ -1068,6 +1068,8 @@ github.com/sagikazarmark/locafero v0.4.0 h1:HApY1R9zGo4DBgr7dqsTH/JJxLTTsOt7u6ke
 github.com/sagikazarmark/locafero v0.4.0/go.mod h1:Pe1W6UlPYUk/+wc/6KFhbORCfqzgYEpgQ3O5fPuL3H4=
 github.com/sagikazarmark/slog-shim v0.1.0 h1:diDBnUNK9N/354PgrxMywXnAwEr1QZcOr6gto+ugjYE=
 github.com/sagikazarmark/slog-shim v0.1.0/go.mod h1:SrcSrq8aKtyuqEI1uvTDTK1arOWRIczQRv+GVI1AkeQ=
+github.com/satori/go.uuid v1.2.0 h1:0uYX9dsZ2yD7q2RtLRtPSdGDWzjeM3TbMJP9utgA0ww=
+github.com/satori/go.uuid v1.2.0/go.mod h1:dA0hQrYB0VpLJoorglMZABFdXlWrHn1NEOzdhQKdks0=
 github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529 h1:nn5Wsu0esKSJiIVhscUtVbo7ada43DJhG55ua/hjS5I=
 github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529/go.mod h1:DxrIzT+xaE7yg65j358z/aeFdxmN0P9QXhEzd20vsDc=
 github.com/sirupsen/logrus v1.2.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
@@ -1113,10 +1115,6 @@ github.com/subosito/gotenv v1.6.0 h1:9NlTDc1FTs4qu0DDq7AEtTPNw6SVm7uBMsUCUjABIf8
 github.com/subosito/gotenv v1.6.0/go.mod h1:Dk4QP5c2W3ibzajGcXpNraDfq2IrhjMIvMSWPKKo0FU=
 github.com/superwhys/goutils v0.0.0-20240115032320-fa0f1c08a061 h1:tXD3Zwtt0+Oa0Zkn4ILOBLFmF2Xnq22HKbTY34rx3ak=
 github.com/superwhys/goutils v0.0.0-20240115032320-fa0f1c08a061/go.mod h1:Q722JzvDWjuJSgkP8W/mn0RY8OMsGttpygQamYriY8Q=
-github.com/superwhys/sshtunnel v0.0.0-20240115031029-ce6685dc03de h1:34C+NanZGmWLMN4+J8pUXz5JHSBkoPRf+41yvT4O2To=
-github.com/superwhys/sshtunnel v0.0.0-20240115031029-ce6685dc03de/go.mod h1:OjVzjMknQXUEPdg6m6l1C7l7IyxCOVQCbMyKivBbidU=
-github.com/superwhys/sshtunnel v0.0.0-20240116030909-778f4307efd0 h1:0pmMExjHW6RlZnUJYsWQxiBW/dj97sCZ+nSSv/QdldM=
-github.com/superwhys/sshtunnel v0.0.0-20240116030909-778f4307efd0/go.mod h1:OjVzjMknQXUEPdg6m6l1C7l7IyxCOVQCbMyKivBbidU=
 github.com/tv42/httpunix v0.0.0-20150427012821-b75d8614f926/go.mod h1:9ESjWnEqriFuLhtthL60Sar/7RFoluCcXsuvEwTV5KM=
 github.com/twitchyliquid64/golang-asm v0.15.1 h1:SU5vSMR7hnwNxj24w34ZyCi/FmDZTkS4MhqMhdFk5YI=
 github.com/twitchyliquid64/golang-asm v0.15.1/go.mod h1:a1lVb/DtPvCB8fslRZhAngC2+aY1QWCk3Cedj/Gdt08=
