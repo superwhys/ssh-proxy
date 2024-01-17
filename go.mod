@@ -12,7 +12,6 @@ require (
 	google.golang.org/protobuf v1.32.0
 )
 
-replace github.com/superwhys/sshtunnel => ../sshtunnel
 
 require (
 	cloud.google.com/go v0.112.0 // indirect
