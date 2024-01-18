@@ -1115,6 +1115,10 @@ github.com/subosito/gotenv v1.6.0 h1:9NlTDc1FTs4qu0DDq7AEtTPNw6SVm7uBMsUCUjABIf8
 github.com/subosito/gotenv v1.6.0/go.mod h1:Dk4QP5c2W3ibzajGcXpNraDfq2IrhjMIvMSWPKKo0FU=
 github.com/superwhys/goutils v0.0.0-20240115032320-fa0f1c08a061 h1:tXD3Zwtt0+Oa0Zkn4ILOBLFmF2Xnq22HKbTY34rx3ak=
 github.com/superwhys/goutils v0.0.0-20240115032320-fa0f1c08a061/go.mod h1:Q722JzvDWjuJSgkP8W/mn0RY8OMsGttpygQamYriY8Q=
+github.com/superwhys/sshtunnel v0.0.0-20240116030909-778f4307efd0 h1:0pmMExjHW6RlZnUJYsWQxiBW/dj97sCZ+nSSv/QdldM=
+github.com/superwhys/sshtunnel v0.0.0-20240116030909-778f4307efd0/go.mod h1:OjVzjMknQXUEPdg6m6l1C7l7IyxCOVQCbMyKivBbidU=
+github.com/superwhys/sshtunnel v0.0.0-20240117031212-92589c331752 h1:pzvt44Ro3/4y7v7+kfDyefBq2AgqPIKJ0Wcc7fx07z0=
+github.com/superwhys/sshtunnel v0.0.0-20240117031212-92589c331752/go.mod h1:OjVzjMknQXUEPdg6m6l1C7l7IyxCOVQCbMyKivBbidU=
 github.com/tv42/httpunix v0.0.0-20150427012821-b75d8614f926/go.mod h1:9ESjWnEqriFuLhtthL60Sar/7RFoluCcXsuvEwTV5KM=
 github.com/twitchyliquid64/golang-asm v0.15.1 h1:SU5vSMR7hnwNxj24w34ZyCi/FmDZTkS4MhqMhdFk5YI=
 github.com/twitchyliquid64/golang-asm v0.15.1/go.mod h1:a1lVb/DtPvCB8fslRZhAngC2+aY1QWCk3Cedj/Gdt08=
@@ -1774,8 +1778,8 @@ google.golang.org/genproto/googleapis/api v0.0.0-20240108191215-35c7eff3a6b1 h1:
 google.golang.org/genproto/googleapis/api v0.0.0-20240108191215-35c7eff3a6b1/go.mod h1:B5xPO//w8qmBDjGReYLpR6UJPnkldGkCSMoH/2vxJeg=
 google.golang.org/genproto/googleapis/rpc v0.0.0-20230525234015-3fc162c6f38a/go.mod h1:xURIpW9ES5+/GZhnV6beoEtxQrnkRGIfP5VQG2tCBLc=
 google.golang.org/genproto/googleapis/rpc v0.0.0-20230525234030-28d5490b6b19/go.mod h1:66JfowdXAEgad5O9NnYcsNPLCPZJD++2L9X0PCMODrA=
-google.golang.org/genproto/googleapis/rpc v0.0.0-20240108191215-35c7eff3a6b1 h1:gphdwh0npgs8elJ4T6J+DQJHPVF7RsuJHCfwztUb4J4=
-google.golang.org/genproto/googleapis/rpc v0.0.0-20240108191215-35c7eff3a6b1/go.mod h1:daQN87bsDqDoe316QbbvX60nMoJQa4r6Ds0ZuoAe5yA=
+google.golang.org/genproto/googleapis/rpc v0.0.0-20240116215550-a9fa1716bcac h1:nUQEQmH/csSvFECKYRv6HWEyypysidKl2I6Qpsglq/0=
+google.golang.org/genproto/googleapis/rpc v0.0.0-20240116215550-a9fa1716bcac/go.mod h1:daQN87bsDqDoe316QbbvX60nMoJQa4r6Ds0ZuoAe5yA=
 google.golang.org/grpc v1.19.0/go.mod h1:mqu4LbDTu4XGKhr4mRzUsmM4RtVoemTSY81AxZiDr8c=
 google.golang.org/grpc v1.20.1/go.mod h1:10oTOabMzJvdu6/UiuZezV6QK5dSlG84ov/aaiqXj38=
 google.golang.org/grpc v1.21.1/go.mod h1:oYelfM1adQP15Ek0mdvEgi9Df8B9CZIaU1084ijfRaM=

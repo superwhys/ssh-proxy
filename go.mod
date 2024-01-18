@@ -7,11 +7,10 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.7.0
 	github.com/superwhys/goutils v0.0.0-20240115032320-fa0f1c08a061
-	github.com/superwhys/sshtunnel v0.0.0-20240116030909-778f4307efd0
+	github.com/superwhys/sshtunnel v0.0.0-20240117031212-92589c331752
 	google.golang.org/grpc v1.60.1
 	google.golang.org/protobuf v1.32.0
 )
-
 
 require (
 	cloud.google.com/go v0.112.0 // indirect
@@ -116,7 +115,7 @@ require (
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/genproto v0.0.0-20240108191215-35c7eff3a6b1 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240108191215-35c7eff3a6b1 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240108191215-35c7eff3a6b1 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240116215550-a9fa1716bcac // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
